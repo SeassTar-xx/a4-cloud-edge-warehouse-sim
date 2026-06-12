@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.algorithm.mapper.OpmhistoryMapper">
+    
+    <resultMap type="Opmhistory" id="OpmhistoryResult">
+        <result property="itemCode"    column="itemCode"    />
+        <result property="cycleNum"    column="cycleNum"    />
+        <result property="actualUsage"    column="actualUsage"    />
+        <result property="id"    column="id"    />
+    </resultMap>
+
+    <sql id="selectOpmhistoryVo">
+        select itemCode, cycleNum, actualUsage, id from opmhistory
+    </sql>
+
+    <select id="selectOpmhistoryList" parameterType="Opmhistory" resultMap="OpmhistoryResult">
+        <include refid="selectOpmhistoryVo"/>
+        <where>  
+            <if test="itemCode != null  and itemCode != ''"> and itemCode = #{itemCode}</if>
+            <if test="cycleNum != null "> and cycleNum = #{cycleNum}</if>
+            <if test="actualUsage != null "> and actualUsage = #{actualUsage}</if>
+        </where>
+    </select>
+
+    <!-- selectOneOpmHistory -->
+    <select id="selectOneOpmHistory" parameterType="Opmhistory" resultMap="OpmhistoryResult">
+        <include refid="selectOpmhistoryVo"/>
+        <where>  
+            <if test="itemCode != null  and itemCode != ''"> and itemCode = #{itemCode}</if>
+            <if test="cycleNum != null "> and cycleNum = #{cycleNum}</if>
+            <if test="actualUsage != null "> and actualUsage = #{actualUsage}</if>
+        </where>
+    </select>
+
+    <select id="selectOpmhistoryById" parameterType="String" resultMap="OpmhistoryResult">
+        <include refid="selectOpmhistoryVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertOpmhistory" parameterType="Opmhistory">
+        insert into opmhistory
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="itemCode != null and itemCode != ''">itemCode,</if>
+            <if test="cycleNum != null">cycleNum,</if>
+            <if test="actualUsage != null">actualUsage,</if>
+            <if test="id != null">id,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="itemCode != null and itemCode != ''">#{itemCode},</if>
+            <if test="cycleNum != null">#{cycleNum},</if>
+            <if test="actualUsage != null">#{actualUsage},</if>
+            <if test="id != null">#{id},</if>
+         </trim>
+    </insert>
+
+    <update id="updateOpmhistory" parameterType="Opmhistory">
+        update opmhistory
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="itemCode != null and itemCode != ''">itemCode = #{itemCode},</if>
+            <if test="cycleNum != null">cycleNum = #{cycleNum},</if>
+            <if test="actualUsage != null">actualUsage = #{actualUsage},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteOpmhistoryById" parameterType="String">
+        delete from opmhistory where id = #{id}
+    </delete>
+
+    <delete id="deleteOpmhistoryByIds" parameterType="String">
+        delete from opmhistory where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.commodity.mapper.CommodityMapper">
+
+    <resultMap type="Commodity" id="CommodityResult">
+        <result property="itemCode"    column="itemCode"    />
+        <result property="name"    column="name"    />
+        <result property="uid"    column="uid"    />
+        <result property="leadTime"    column="leadTime"    />
+        <result property="timeUid"    column="timeUid"    />
+        <result property="cgc"    column="cgc"    />
+        <result property="safeFlag"    column="safeFlag"    />
+        <result property="safeStoke"    column="safeStoke"    />
+        <result property="maxStoke"    column="maxStoke"    />
+        <result property="expectSale"    column="expectSale"    />
+        <result property="saleUid"    column="saleUid"    />
+        <result property="id"    column="id"    />
+    </resultMap>
+
+
+    <sql id="selectCommodityVo">
+        select itemCode, name, uid, leadTime, timeUid, cgc, safeFlag, safeStoke, maxStoke, expectSale, saleUid, id from commodity
+    </sql>
+
+    <select id="selectCommodityList" parameterType="Commodity" resultMap="CommodityResult">
+        <include refid="selectCommodityVo"/>
+        <where>
+            <if test="itemCode != null  and itemCode != ''"> and itemCode = #{itemCode}</if>
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="uid != null "> and uid = #{uid}</if>
+            <if test="leadTime != null "> and leadTime = #{leadTime}</if>
+            <if test="timeUid != null "> and timeUid = #{timeUid}</if>
+            <if test="cgc != null  and cgc != ''"> and cgc = #{cgc}</if>
+            <if test="safeFlag != null "> and safeFlag = #{safeFlag}</if>
+            <if test="safeStoke != null "> and safeStoke = #{safeStoke}</if>
+            <if test="maxStoke != null "> and maxStoke = #{maxStoke}</if>
+            <if test="expectSale != null "> and expectSale = #{expectSale}</if>
+            <if test="saleUid != null "> and saleUid = #{saleUid}</if>
+        </where>
+    </select>
+
+    <select id="selectCommodityById" parameterType="Integer" resultMap="CommodityResult">
+        <include refid="selectCommodityVo"/>
+        where id = #{id}
+    </select>
+
+    <select id="selectItemCodeByCGC" parameterType="String" resultMap="CommodityResult">
+        <include refid="selectCommodityVo"/>
+        select itemCode from commodity where cgc = #{cgc}
+    </select>
+
+    <select id="selectCommodityByItemCode" parameterType="String" resultMap="CommodityResult">
+        <include refid="selectCommodityVo"/>
+        where itemCode = #{itemCode}
+    </select>
+
+    <insert id="insertCommodity" parameterType="Commodity" useGeneratedKeys="true" keyProperty="id">
+        insert into commodity
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="itemCode != null and itemCode != ''">itemCode,</if>
+            <if test="name != null and name != ''">name,</if>
+            <if test="uid != null">uid,</if>
+            <if test="leadTime != null">leadTime,</if>
+            <if test="timeUid != null">timeUid,</if>
+            <if test="cgc != null and cgc != ''">cgc,</if>
+            <if test="safeFlag != null">safeFlag,</if>
+            <if test="safeStoke != null">safeStoke,</if>
+            <if test="maxStoke != null">maxStoke,</if>
+            <if test="expectSale != null">expectSale,</if>
+            <if test="saleUid != null">saleUid,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="itemCode != null and itemCode != ''">#{itemCode},</if>
+            <if test="name != null and name != ''">#{name},</if>
+            <if test="uid != null">#{uid},</if>
+            <if test="leadTime != null">#{leadTime},</if>
+            <if test="timeUid != null">#{timeUid},</if>
+            <if test="cgc != null and cgc != ''">#{cgc},</if>
+            <if test="safeFlag != null">#{safeFlag},</if>
+            <if test="safeStoke != null">#{safeStoke},</if>
+            <if test="maxStoke != null">#{maxStoke},</if>
+            <if test="expectSale != null">#{expectSale},</if>
+            <if test="saleUid != null">#{saleUid},</if>
+        </trim>
+    </insert>
+
+    <update id="updateCommodity" parameterType="Commodity">
+        update commodity
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="itemCode != null and itemCode != ''">itemCode = #{itemCode},</if>
+            <if test="name != null and name != ''">name = #{name},</if>
+            <if test="uid != null">uid = #{uid},</if>
+            <if test="leadTime != null">leadTime = #{leadTime},</if>
+            <if test="timeUid != null">timeUid = #{timeUid},</if>
+            <if test="cgc != null and cgc != ''">cgc = #{cgc},</if>
+            <if test="safeFlag != null">safeFlag = #{safeFlag},</if>
+            <if test="safeStoke != null">safeStoke = #{safeStoke},</if>
+            <if test="maxStoke != null">maxStoke = #{maxStoke},</if>
+            <if test="expectSale != null">expectSale = #{expectSale},</if>
+            <if test="saleUid != null">saleUid = #{saleUid},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteCommodityById" parameterType="Integer">
+        delete from commodity where id = #{id}
+    </delete>
+
+    <delete id="deleteCommodityByIds" parameterType="String">
+        delete from commodity where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.unit.mapper.UnitMapper">
+    
+    <resultMap type="Unit" id="UnitResult">
+        <result property="uid"    column="uid"    />
+        <result property="unit"    column="unit"    />
+    </resultMap>
+
+    <sql id="selectUnitVo">
+        select uid, unit from unit
+    </sql>
+
+    <select id="selectUnitList" parameterType="Unit" resultMap="UnitResult">
+        <include refid="selectUnitVo"/>
+        <where>  
+            <if test="unit != null  and unit != ''"> and unit = #{unit}</if>
+        </where>
+    </select>
+    
+    <select id="selectUnitByUid" parameterType="Long" resultMap="UnitResult">
+        <include refid="selectUnitVo"/>
+        where uid = #{uid}
+    </select>
+        
+    <insert id="insertUnit" parameterType="Unit" useGeneratedKeys="true" keyProperty="uid">
+        insert into unit
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="unit != null and unit != ''">unit,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="unit != null and unit != ''">#{unit},</if>
+         </trim>
+    </insert>
+
+    <update id="updateUnit" parameterType="Unit">
+        update unit
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="unit != null and unit != ''">unit = #{unit},</if>
+        </trim>
+        where uid = #{uid}
+    </update>
+
+    <delete id="deleteUnitByUid" parameterType="Long">
+        delete from unit where uid = #{uid}
+    </delete>
+
+    <delete id="deleteUnitByUids" parameterType="String">
+        delete from unit where uid in 
+        <foreach item="uid" collection="array" open="(" separator="," close=")">
+            #{uid}
+        </foreach>
+    </delete>
+</mapper>

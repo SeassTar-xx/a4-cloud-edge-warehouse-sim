@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.purchaseorder.mapper.PurchaseorderMapper">
+
+    <resultMap type="Purchaseorder" id="PurchaseorderResult">
+        <result property="orderTime"    column="orderTime"    />
+        <result property="itemCode"    column="itemCode"    />
+        <result property="name"    column="name"    />
+        <result property="purchaseVolume"    column="purchaseVolume"    />
+        <result property="uid"    column="uid"    />
+        <result property="status"    column="status"    />
+        <result property="id"    column="id"    />
+        <result property="arrivalTime"    column="arrivalTime"    />
+        <result property="orderCode"    column="orderCode"    />
+    </resultMap>
+
+    <sql id="selectPurchaseorderVo">
+        select orderTime, itemCode, name, purchaseVolume, uid, status, id, arrivalTime, orderCode from purchaseorder
+    </sql>
+
+    <select id="selectPurchaseorderList" parameterType="Purchaseorder" resultMap="PurchaseorderResult">
+        <include refid="selectPurchaseorderVo"/>
+        <where>
+            <if test="params.beginOrderTime != null and params.beginOrderTime != '' and params.endOrderTime != null and params.endOrderTime != ''"> and orderTime between #{params.beginOrderTime} and #{params.endOrderTime}</if>
+            <if test="itemCode != null  and itemCode != ''"> and itemCode = #{itemCode}</if>
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="purchaseVolume != null "> and purchaseVolume = #{purchaseVolume}</if>
+            <if test="uid != null "> and uid = #{uid}</if>
+            <if test="status != null "> and status = #{status}</if>
+            <if test="arrivalTime != null "> and arrivalTime = #{arrivalTime}</if>
+            <if test="orderCode != null  and orderCode != ''"> and orderCode = #{orderCode}</if>
+        </where>
+    </select>
+
+    <select id="selectPurchaseorderById" parameterType="Integer" resultMap="PurchaseorderResult">
+        <include refid="selectPurchaseorderVo"/>
+        where id = #{id}
+    </select>
+
+    <select id="selectPurchaseByTime" parameterType="Date" resultMap="PurchaseorderResult">
+        <include refid="selectPurchaseorderVo"/>
+        where orderTime = #{orderTime}
+    </select>
+
+    <insert id="insertPurchaseorder" parameterType="Purchaseorder">
+        insert into purchaseorder
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="orderTime != null">orderTime,</if>
+            <if test="itemCode != null and itemCode != ''">itemCode,</if>
+            <if test="name != null and name != ''">name,</if>
+            <if test="purchaseVolume != null">purchaseVolume,</if>
+            <if test="uid != null">uid,</if>
+            <if test="status != null">status,</if>
+            <if test="id != null">id,</if>
+            <if test="arrivalTime != null">arrivalTime,</if>
+            <if test="orderCode != null">orderCode,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="orderTime != null">#{orderTime},</if>
+            <if test="itemCode != null and itemCode != ''">#{itemCode},</if>
+            <if test="name != null and name != ''">#{name},</if>
+            <if test="purchaseVolume != null">#{purchaseVolume},</if>
+            <if test="uid != null">#{uid},</if>
+            <if test="status != null">#{status},</if>
+            <if test="id != null">#{id},</if>
+            <if test="arrivalTime != null">#{arrivalTime},</if>
+            <if test="orderCode != null">#{orderCode},</if>
+        </trim>
+    </insert>
+
+    <update id="updatePurchaseorder" parameterType="Purchaseorder">
+        update purchaseorder
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="orderTime != null">orderTime = #{orderTime},</if>
+            <if test="itemCode != null and itemCode != ''">itemCode = #{itemCode},</if>
+            <if test="name != null and name != ''">name = #{name},</if>
+            <if test="purchaseVolume != null">purchaseVolume = #{purchaseVolume},</if>
+            <if test="uid != null">uid = #{uid},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="arrivalTime != null">arrivalTime = #{arrivalTime},</if>
+            <if test="orderCode != null">orderCode = #{orderCode},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deletePurchaseorderById" parameterType="Integer">
+        delete from purchaseorder where id = #{id}
+    </delete>
+
+    <delete id="deletePurchaseorderByIds" parameterType="String">
+        delete from purchaseorder where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.arriveorder.mapper.ArriveorderMapper">
+
+    <resultMap type="Arriveorder" id="ArriveorderResult">
+        <result property="arriveTime"    column="arriveTime"    />
+        <result property="itemCode"    column="itemCode"    />
+        <result property="name"    column="name"    />
+        <result property="arriveNum"    column="arriveNum"    />
+        <result property="uid"    column="uid"    />
+        <result property="arriveCode"    column="arriveCode"    />
+        <result property="purchaseCode"    column="purchaseCode"    />
+        <result property="id"    column="id"    />
+    </resultMap>
+
+    <sql id="selectArriveorderVo">
+        select arriveTime, itemCode, name, arriveNum, uid, arriveCode, purchaseCode, id from arriveorder
+    </sql>
+
+    <select id="selectArriveorderList" parameterType="Arriveorder" resultMap="ArriveorderResult">
+        <include refid="selectArriveorderVo"/>
+        <where>
+            <if test="arriveTime != null "> and arriveTime = #{arriveTime}</if>
+            <if test="itemCode != null  and itemCode != ''"> and itemCode = #{itemCode}</if>
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="arriveNum != null "> and arriveNum = #{arriveNum}</if>
+            <if test="uid != null "> and uid = #{uid}</if>
+            <if test="arriveCode != null  and arriveCode != ''"> and arriveCode = #{arriveCode}</if>
+            <if test="purchaseCode != null  and purchaseCode != ''"> and purchaseCode = #{purchaseCode}</if>
+        </where>
+    </select>
+
+    <select id="selectArriveorderById" parameterType="Integer" resultMap="ArriveorderResult">
+        <include refid="selectArriveorderVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertArriveorder" parameterType="Arriveorder" useGeneratedKeys="true" keyProperty="id">
+        insert into arriveorder
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="arriveTime != null">arriveTime,</if>
+            <if test="itemCode != null and itemCode != ''">itemCode,</if>
+            <if test="name != null and name != ''">name,</if>
+            <if test="arriveNum != null">arriveNum,</if>
+            <if test="uid != null">uid,</if>
+            <if test="arriveCode != null">arriveCode,</if>
+            <if test="purchaseCode != null and purchaseCode != ''">purchaseCode,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="arriveTime != null">#{arriveTime},</if>
+            <if test="itemCode != null and itemCode != ''">#{itemCode},</if>
+            <if test="name != null and name != ''">#{name},</if>
+            <if test="arriveNum != null">#{arriveNum},</if>
+            <if test="uid != null">#{uid},</if>
+            <if test="arriveCode != null">#{arriveCode},</if>
+            <if test="purchaseCode != null and purchaseCode != ''">#{purchaseCode},</if>
+        </trim>
+    </insert>
+
+    <update id="updateArriveorder" parameterType="Arriveorder">
+        update arriveorder
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="arriveTime != null">arriveTime = #{arriveTime},</if>
+            <if test="itemCode != null and itemCode != ''">itemCode = #{itemCode},</if>
+            <if test="name != null and name != ''">name = #{name},</if>
+            <if test="arriveNum != null">arriveNum = #{arriveNum},</if>
+            <if test="uid != null">uid = #{uid},</if>
+            <if test="arriveCode != null">arriveCode = #{arriveCode},</if>
+            <if test="purchaseCode != null and purchaseCode != ''">purchaseCode = #{purchaseCode},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteArriveorderById" parameterType="Integer">
+        delete from arriveorder where id = #{id}
+    </delete>
+
+    <delete id="deleteArriveorderByIds" parameterType="String">
+        delete from arriveorder where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

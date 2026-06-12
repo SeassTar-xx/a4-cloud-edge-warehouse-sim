@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.algorithm.mapper.SysteminfoMapper">
+    
+    <resultMap type="Systeminfo" id="SysteminfoResult">
+        <result property="currentCycleNum"    column="currentCycleNum"    />
+        <result property="cycleLen"    column="cycleLen"    />
+        <result property="exceedPossible"    column="exceedPossible"    />
+        <result property="lotsPrinciple"    column="lotsPrinciple"    />
+    </resultMap>
+
+    <sql id="selectSysteminfoVo">
+        select currentCycleNum, cycleLen, exceedPossible, lotsPrinciple from systeminfo
+    </sql>
+
+    <select id="selectSysteminfo"  resultMap="SysteminfoResult">
+        <include refid="selectSysteminfoVo"/>
+    </select>
+      
+    <insert id="insertSysteminfo" parameterType="Systeminfo">
+        insert into systeminfo
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="currentCycleNum != null">currentCycleNum,</if>
+            <if test="cycleLen != null">cycleLen,</if>
+            <if test="exceedPossible != null">exceedPossible,</if>
+            <if test="lotsPrinciple != null">lotsPrinciple,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="currentCycleNum != null">#{currentCycleNum},</if>
+            <if test="cycleLen != null">#{cycleLen},</if>
+            <if test="exceedPossible != null">#{exceedPossible},</if>
+            <if test="lotsPrinciple != null">#{lotsPrinciple},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSysteminfo" parameterType="Systeminfo">
+        update systeminfo
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="cycleLen != null">cycleLen = #{cycleLen},</if>
+            <if test="exceedPossible != null">exceedPossible = #{exceedPossible},</if>
+            <if test="lotsPrinciple != null">lotsPrinciple = #{lotsPrinciple},</if>
+        </trim>
+        where currentCycleNum = #{currentCycleNum}
+    </update>
+
+    <delete id="deleteSysteminfoByCurrentCycleNum" parameterType="Long">
+        delete from systeminfo where currentCycleNum = #{currentCycleNum}
+    </delete>
+
+    <delete id="deleteSysteminfoByCurrentCycleNums" parameterType="String">
+        delete from systeminfo where currentCycleNum in 
+        <foreach item="currentCycleNum" collection="array" open="(" separator="," close=")">
+            #{currentCycleNum}
+        </foreach>
+    </delete>
+</mapper>

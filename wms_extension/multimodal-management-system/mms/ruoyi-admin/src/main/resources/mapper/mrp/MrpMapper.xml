@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.algorithm.mapper.MrpMapper">
+    
+    <resultMap type="Mrp" id="MrpResult">
+        <result property="id"    column="id"    />
+        <result property="itemCode"    column="itemCode"    />
+        <result property="planedAmount"    column="planedAmount"    />
+        <result property="orderTime"    column="orderTime"    />
+        <result property="demandTime"    column="demandTime"    />
+        <result property="demandAmount"    column="demandAmount"    />
+        <result property="itemName"    column="itemName"    />
+        <result property="unit"    column="unit"    />
+        <result property="mrpid"    column="mrpid"    />
+        <!-- statusCode -->
+        <result property="statusCode"    column="statusCode"    />
+    </resultMap>
+
+    <sql id="selectMrpVo">
+        select id, itemCode, planedAmount, orderTime, demandTime, demandAmount, itemName, unit, mrpid, statusCode from mrp
+    </sql>
+
+    <select id="selectMrpList" parameterType="Mrp" resultMap="MrpResult">
+        <include refid="selectMrpVo"/>
+        <where>  
+            <if test="itemCode != null  and itemCode != ''"> and itemCode = #{itemCode}</if>
+            <if test="planedAmount != null "> and planedAmount = #{planedAmount}</if>
+            <if test="orderTime != null "> and orderTime = #{orderTime}</if>
+            <if test="demandTime != null "> and demandTime = #{demandTime}</if>
+            <if test="demandAmount != null "> and demandAmount = #{demandAmount}</if>
+            <if test="itemName != null  and itemName != ''"> and itemName like concat('%', #{itemName}, '%')</if>
+            <if test="unit != null  and unit != ''"> and unit = #{unit}</if>
+            <if test="mrpid != null  and mrpid != ''"> and mrpid = #{mrpid}</if>
+            <if test="statusCode != null"> and statusCode = #{statusCode}</if>
+        </where>
+    </select>
+    
+    <select id="selectMrpById" parameterType="Long" resultMap="MrpResult">
+        <include refid="selectMrpVo"/>
+        where id = #{id}
+    </select>
+
+    <select id="selectMrpByMrpid" parameterType="String" resultMap="MrpResult">
+        <include refid="selectMrpVo"/>
+        where mrpid = #{mrpid}
+    </select>
+        
+    <insert id="insertMrp" parameterType="Mrp" useGeneratedKeys="true" keyProperty="id">
+        insert into mrp
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="itemCode != null and itemCode != ''">itemCode,</if>
+            <if test="planedAmount != null">planedAmount,</if>
+            <if test="orderTime != null">orderTime,</if>
+            <if test="demandTime != null">demandTime,</if>
+            <if test="demandAmount != null">demandAmount,</if>
+            <if test="itemName != null and itemName != ''">itemName,</if>
+            <if test="unit != null and unit != ''">unit,</if>
+            <if test="mrpid != null and mrpid != ''">mrpid,</if>
+            <if test="statusCode != null">statusCode,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="itemCode != null and itemCode != ''">#{itemCode},</if>
+            <if test="planedAmount != null">#{planedAmount},</if>
+            <if test="orderTime != null">#{orderTime},</if>
+            <if test="demandTime != null">#{demandTime},</if>
+            <if test="demandAmount != null">#{demandAmount},</if>
+            <if test="itemName != null and itemName != ''">#{itemName},</if>
+            <if test="unit != null and unit != ''">#{unit},</if>
+            <if test="mrpid != null and mrpid != ''">#{mrpid},</if>
+            <if test="statusCode != null">#{statusCode},</if>
+         </trim>
+    </insert>
+
+    <update id="updateMrp" parameterType="Mrp">
+        update mrp
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="itemCode != null and itemCode != ''">itemCode = #{itemCode},</if>
+            <if test="planedAmount != null">planedAmount = #{planedAmount},</if>
+            <if test="orderTime != null">orderTime = #{orderTime},</if>
+            <if test="demandTime != null">demandTime = #{demandTime},</if>
+            <if test="demandAmount != null">demandAmount = #{demandAmount},</if>
+            <if test="itemName != null and itemName != ''">itemName = #{itemName},</if>
+            <if test="unit != null and unit != ''">unit = #{unit},</if>
+            <if test="mrpid != null and mrpid != ''">mrpid = #{mrpid},</if>
+            <if test="statusCode != null">statusCode = #{statusCode},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteMrpById" parameterType="Long">
+        delete from mrp where id = #{id}
+    </delete>
+
+    <delete id="deleteMrpByIds" parameterType="String">
+        delete from mrp where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <delete id="deleteMrpByMrpid" parameterType="String">
+        delete from mrp where mrpid = #{mrpid}
+    </delete>
+</mapper>

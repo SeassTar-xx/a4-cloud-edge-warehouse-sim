@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.returnorder.mapper.ReturnorderMapper">
+    
+    <resultMap type="Returnorder" id="ReturnorderResult">
+        <result property="id"    column="id"    />
+        <result property="orderCode"    column="orderCode"    />
+        <result property="itemCode"    column="itemCode"    />
+        <result property="returnTime"    column="returnTime"    />
+        <result property="returnNum"    column="returnNum"    />
+    </resultMap>
+
+    <sql id="selectReturnorderVo">
+        select id, orderCode, itemCode, returnTime, returnNum from returnorder
+    </sql>
+
+    <select id="selectReturnorderList" parameterType="Returnorder" resultMap="ReturnorderResult">
+        <include refid="selectReturnorderVo"/>
+        <where>  
+            <if test="orderCode != null  and orderCode != ''"> and orderCode = #{orderCode}</if>
+            <if test="itemCode != null  and itemCode != ''"> and itemCode = #{itemCode}</if>
+            <if test="returnTime != null "> and returnTime = #{returnTime}</if>
+            <if test="returnNum != null "> and returnNum = #{returnNum}</if>
+        </where>
+    </select>
+    
+    <select id="selectReturnorderById" parameterType="Long" resultMap="ReturnorderResult">
+        <include refid="selectReturnorderVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertReturnorder" parameterType="Returnorder" useGeneratedKeys="true" keyProperty="id">
+        insert into returnorder
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="orderCode != null and orderCode != ''">orderCode,</if>
+            <if test="itemCode != null and itemCode != ''">itemCode,</if>
+            <if test="returnTime != null">returnTime,</if>
+            <if test="returnNum != null">returnNum,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="orderCode != null and orderCode != ''">#{orderCode},</if>
+            <if test="itemCode != null and itemCode != ''">#{itemCode},</if>
+            <if test="returnTime != null">#{returnTime},</if>
+            <if test="returnNum != null">#{returnNum},</if>
+         </trim>
+    </insert>
+
+    <update id="updateReturnorder" parameterType="Returnorder">
+        update returnorder
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="orderCode != null and orderCode != ''">orderCode = #{orderCode},</if>
+            <if test="itemCode != null and itemCode != ''">itemCode = #{itemCode},</if>
+            <if test="returnTime != null">returnTime = #{returnTime},</if>
+            <if test="returnNum != null">returnNum = #{returnNum},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteReturnorderById" parameterType="Long">
+        delete from returnorder where id = #{id}
+    </delete>
+
+    <delete id="deleteReturnorderByIds" parameterType="String">
+        delete from returnorder where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

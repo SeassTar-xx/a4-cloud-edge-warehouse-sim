@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.mpsPlus.mapper.MpsMapper">
+
+    <resultMap type="Mps" id="MpsResult">
+        <result property="itemCode"    column="itemCode"    />
+        <result property="demandNum"    column="demandNum"    />
+        <result property="demandTime"    column="demandTime"    />
+        <result property="id"    column="id"    />
+        <result property="mpsCode"    column="mpsCode"    />
+        <result property="bomCode"    column="bomCode"    />
+    </resultMap>
+
+    <sql id="selectMpsVo">
+        select itemCode, demandNum, demandTime, id, mpsCode, bomCode from mps
+    </sql>
+
+    <select id="selectMpsList" parameterType="Mps" resultMap="MpsResult">
+        <include refid="selectMpsVo"/>
+        <where>
+            <if test="itemCode != null  and itemCode != ''"> and itemCode = #{itemCode}</if>
+            <if test="demandNum != null "> and demandNum = #{demandNum}</if>
+            <if test="demandTime != null "> and demandTime = #{demandTime}</if>
+            <if test="mpsCode != null  and mpsCode != ''"> and mpsCode = #{mpsCode}</if>
+            <if test="bomCode != null  and bomCode != ''"> and bomCode = #{bomCode}</if>
+        </where>
+    </select>
+
+    <select id="selectMpsById" parameterType="Integer" resultMap="MpsResult">
+        <include refid="selectMpsVo"/>
+        where id = #{id}
+    </select>
+
+    <select id="selectMpsByTime" parameterType="Date" resultMap="MpsResult">
+        <include refid="selectMpsVo"/>
+        where demandTime = #{demandTime}
+    </select>
+
+    <insert id="insertMps" parameterType="Mps" useGeneratedKeys="true" keyProperty="id">
+        insert into mps
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="itemCode != null and itemCode != ''">itemCode,</if>
+            <if test="demandNum != null">demandNum,</if>
+            <if test="demandTime != null">demandTime,</if>
+            <if test="id != null">id,</if>
+            <if test="mpsCode != null">mpsCode,</if>
+            <if test="bomCode != null and bomCode != ''">bomCode,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="itemCode != null and itemCode != ''">#{itemCode},</if>
+            <if test="demandNum != null">#{demandNum},</if>
+            <if test="demandTime != null">#{demandTime},</if>
+            <if test="id != null">#{id},</if>
+            <if test="mpsCode != null">#{mpsCode},</if>
+            <if test="bomCode != null and bomCode != ''">#{bomCode},</if>
+        </trim>
+    </insert>
+
+    <update id="updateMps" parameterType="Mps">
+        update mps
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="itemCode != null and itemCode != ''">itemCode = #{itemCode},</if>
+            <if test="demandNum != null">demandNum = #{demandNum},</if>
+            <if test="demandTime != null">demandTime = #{demandTime},</if>
+            <if test="mpsCode != null">mpsCode = #{mpsCode},</if>
+            <if test="bomCode != null and bomCode != ''">bomCode = #{bomCode},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteMpsById" parameterType="Integer">
+        delete from mps where id = #{id}
+    </delete>
+
+    <delete id="deleteMpsByIds" parameterType="String">
+        delete from mps where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

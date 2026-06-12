@@ -1,0 +1,52 @@
+{
+  "grid": {
+    "width": 10,
+    "height": 8,
+    "obstacles": [[4, 2], [4, 3], [4, 4]]
+  },
+  "conveyors": [
+    {
+      "id": "CV1",
+      "position": [0, 1],
+      "queue": [
+        {"id": "C1", "volume": 1.0, "target_shelf_id": "S1", "created_at": 0},
+        {"id": "C2", "volume": 0.5, "target_shelf_id": "S2", "created_at": 1},
+        {"id": "C3", "volume": 0.5, "target_shelf_id": "S2", "created_at": 2},
+        {"id": "C4", "volume": 0.25, "target_shelf_id": "S3", "created_at": 3}
+      ]
+    },
+    {
+      "id": "CV2",
+      "position": [0, 6],
+      "queue": [
+        {"id": "C5", "volume": 0.25, "target_shelf_id": "S3", "created_at": 4},
+        {"id": "C6", "volume": 0.25, "target_shelf_id": "S3", "created_at": 5},
+        {"id": "C7", "volume": 0.25, "target_shelf_id": "S3", "created_at": 6},
+        {"id": "C8", "volume": 1.0, "target_shelf_id": "S4", "created_at": 7}
+      ]
+    }
+  ],
+  "agvs": [
+    {"id": "A1", "position": [1, 0]},
+    {"id": "A2", "position": [1, 2]},
+    {"id": "A3", "position": [1, 5]},
+    {"id": "A4", "position": [1, 7]}
+  ],
+  "handoff_zones": [
+    {"id": "HZ1", "shelf_id": "S1", "position": [8, 1]},
+    {"id": "HZ2", "shelf_id": "S2", "position": [8, 3]},
+    {"id": "HZ3", "shelf_id": "S3", "position": [8, 5]},
+    {"id": "HZ4", "shelf_id": "S4", "position": [8, 7]}
+  ],
+  "shelves": [
+    {"id": "S1", "slots": [{"id": "S1-P1", "max_volume": 1.0}, {"id": "S1-P2", "max_volume": 1.0}, {"id": "S1-P3", "max_volume": 1.0}]},
+    {"id": "S2", "slots": [{"id": "S2-P1", "max_volume": 1.0}, {"id": "S2-P2", "max_volume": 1.0}, {"id": "S2-P3", "max_volume": 1.0}]},
+    {"id": "S3", "slots": [{"id": "S3-P1", "max_volume": 1.0}, {"id": "S3-P2", "max_volume": 1.0}, {"id": "S3-P3", "max_volume": 1.0}, {"id": "S3-P4", "max_volume": 1.0}]},
+    {"id": "S4", "slots": [{"id": "S4-P1", "max_volume": 1.0}, {"id": "S4-P2", "max_volume": 1.0}, {"id": "S4-P3", "max_volume": 1.0}]}
+  ],
+  "shelf_robots": [
+    {"id": "R1", "shelf_ids": ["S1", "S2"]},
+    {"id": "R2", "shelf_ids": ["S3", "S4"]}
+  ]
+}
+

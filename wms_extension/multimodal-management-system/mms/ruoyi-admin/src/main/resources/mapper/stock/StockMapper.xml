@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.stock.mapper.StockMapper">
+
+    <resultMap type="Stock" id="StockResult">
+        <result property="itemCode"    column="itemCode"    />
+        <result property="name"    column="name"    />
+        <result property="price"    column="price"    />
+        <result property="stock"    column="stock"    />
+        <result property="totalCost"    column="totalCost"    />
+        <result property="assignMount"    column="assignMount"    />
+        <result property="id"    column="id"    />
+    </resultMap>
+
+    <sql id="selectStockVo">
+        select itemCode, name, price, stock, totalCost, assignMount, id from stock
+    </sql>
+
+    <select id="selectStockList" parameterType="Stock" resultMap="StockResult">
+        <include refid="selectStockVo"/>
+        <where>
+            <if test="itemCode != null  and itemCode != ''"> and itemCode like concat('%', #{itemCode}, '%')</if>
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="price != null "> and price = #{price}</if>
+            <if test="stock != null "> and stock = #{stock}</if>
+            <if test="totalCost != null "> and totalCost = #{totalCost}</if>
+            <if test="assignMount != null "> and assignMount = #{assignMount}</if>
+        </where>
+    </select>
+
+    <!-- 根据精确的itemCode查询对应的库存信息， 作者： diaoaonan, 时间： 2024/2/13 -->
+    <select id="selectOneStockByItemCode" parameterType="String" resultMap="StockResult">
+        <include refid="selectStockVo"/>
+        where itemCode = #{itemCode}
+    </select>
+
+    <select id="selectStockByItemCode" parameterType="String" resultMap="StockResult">
+        <include refid="selectStockVo"/>
+        where itemCode like concat('%', #{itemCode}, '%')
+    </select>
+
+    <select id="selectStockById" parameterType="Integer" resultMap="StockResult">
+        <include refid="selectStockVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertStock" parameterType="Stock" useGeneratedKeys="true" keyProperty="id">
+        insert into stock
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="itemCode != null and itemCode != ''">itemCode,</if>
+            <if test="name != null and name != ''">name,</if>
+            <if test="price != null">price,</if>
+            <if test="stock != null">stock,</if>
+            <if test="totalCost != null">totalCost,</if>
+            <if test="assignMount != null">assignMount,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="itemCode != null and itemCode != ''">#{itemCode},</if>
+            <if test="name != null and name != ''">#{name},</if>
+            <if test="price != null">#{price},</if>
+            <if test="stock != null">#{stock},</if>
+            <if test="totalCost != null">#{totalCost},</if>
+            <if test="assignMount != null">#{assignMount},</if>
+        </trim>
+    </insert>
+
+    <update id="updateStock" parameterType="Stock">
+        update stock
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="itemCode != null and itemCode != ''">itemCode = #{itemCode},</if>
+            <if test="name != null and name != ''">name = #{name},</if>
+            <if test="price != null">price = #{price},</if>
+            <if test="stock != null">stock = #{stock},</if>
+            <if test="totalCost != null">totalCost = #{totalCost},</if>
+            <if test="assignMount != null">assignMount = #{assignMount},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteStockById" parameterType="Integer">
+        delete from stock where id = #{id}
+    </delete>
+
+    <delete id="deleteStockByIds" parameterType="String">
+        delete from stock where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

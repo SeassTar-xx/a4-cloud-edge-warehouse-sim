@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.bom.mapper.BomMapper">
+    
+    <resultMap type="Bom" id="BomResult">
+        <result property="itemCode"    column="itemCode"    />
+        <result property="parentBomId"    column="parentBomId"    />
+        <result property="num"    column="num"    />
+        <result property="bomid"    column="bomid"    />
+        <result property="leaderTime"    column="leaderTime"    />
+        <result property="bomCode"    column="bomCode"    />
+    </resultMap>
+
+    <resultMap type="BomHead" id="Bom_headResult">
+        <result property="itemCode"    column="itemCode"    />
+        <result property="bomCode"    column="bomCode"    />
+    </resultMap>
+
+    <sql id="selectBomVo">
+        select itemCode, parentBomId, num, bomid, leaderTime, bomCode from bom_details
+    </sql>
+
+    <sql id="selectBom_headVo">
+        select itemCode, bomCode from bom
+    </sql>
+
+    <select id="selectBom_headList" parameterType="BomHead" resultMap="Bom_headResult">
+        <include refid="selectBom_headVo"/>
+        <where>  
+            <if test="itemCode != null  and itemCode != ''"> and itemCode = #{itemCode}</if>
+            <if test="bomCode != null  and bomCode != ''"> and bomCode = #{bomCode}</if>
+        </where>
+    </select>
+
+    <select id="selectBomList" parameterType="Bom" resultMap="BomResult">
+        <include refid="selectBomVo"/>
+        <where>  
+            <if test="itemCode != null and itemCode != ''"> and itemCode = #{itemCode}</if>
+            <if test="num != null "> and num = #{num}</if>
+            <if test="parentBomId != null "> and parentBomId = #{parentBomId}</if>
+            <if test="leaderTime != null "> and leaderTime = #{leaderTime}</if>
+            <if test="bomCode != null  and bomCode != ''"> and bomCode = #{bomCode}</if>
+        </where>
+    </select>
+    
+    <select id="selectBomByBomid" parameterType="Long" resultMap="BomResult">
+        <include refid="selectBomVo"/>
+        where bomid = #{bomid}
+    </select>
+
+    <select id="selectBomByItemCode" parameterType="String" resultMap="BomResult">
+        <include refid="selectBomVo"/>
+        where itemCode = #{itemCode}
+    </select>
+        
+    <insert id="insertBom" parameterType="Bom" useGeneratedKeys="true" keyProperty="bomid">
+        insert into bom_details
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="itemCode != null and itemCode != ''">itemCode,</if>
+            <if test="parentBomId != null ">parentBomId, </if>
+            <if test="num != null">num,</if>
+            <if test="leaderTime != null ">leaderTime, </if>
+            <if test="bomCode != null and bomCode != ''">bomCode,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="itemCode != null and itemCode != ''">#{itemCode},</if>
+            <if test="parentBomId != null ">#{parentBomId}, </if>
+            <if test="num != null">#{num},</if>
+            <if test="leaderTime != null ">#{leaderTime}, </if>
+            <if test="bomCode != null and bomCode != ''">#{bomCode},</if>
+         </trim>
+    </insert>
+
+    <insert id="insertBom_head" parameterType="BomHead" useGeneratedKeys="true" keyProperty="bomCode">
+        insert into bom
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="itemCode != null and itemCode != ''">itemCode,</if>
+            <if test="bomCode != null and bomCode != ''">bomCode,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="itemCode != null and itemCode != ''">#{itemCode},</if>
+            <if test="bomCode != null and bomCode != ''">#{bomCode},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBom" parameterType="Bom">
+        update bom_details
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="itemCode != null and itemCode != ''">itemCode = #{itemCode},</if>
+            <if test="num != null">num = #{num},</if>
+            <if test="parentBomId != null ">parentBomId = #{parentBomId},</if>
+            <if test="leaderTime != null ">leaderTime = #{leaderTime},</if>
+            <if test="bomCode != null and bomCode != ''">bomCode = #{bomCode},</if>
+        </trim>
+        where bomid = #{bomid}
+    </update>
+
+    <update id="updateBom_head" parameterType="BomHead">
+        update bom
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="itemCode != null and itemCode != ''">itemCode = #{itemCode},</if>
+            <if test="bomCode != null and bomCode != ''">bomCode = #{bomCode},</if>
+        </trim>
+        where bomCode = #{bomCode}
+    </update>
+
+    <delete id="deleteBomByBomid" parameterType="Long">
+        delete from bom_details where bomid = #{bomid}
+    </delete>
+
+    <delete id="deleteBomBybomCode" parameterType="String">
+        delete from bom_details where bomCode = #{bomCode}
+    </delete>
+
+    <delete id="deleteBom_headByBomCode" parameterType="String">
+        delete from bom where bomCode = #{bomCode}
+    </delete>
+
+    <delete id="deleteBomByBomids" parameterType="String">
+        delete from bom_details where bomid in 
+        <foreach item="bomid" collection="array" open="(" separator="," close=")">
+            #{bomid}
+        </foreach>
+    </delete>
+</mapper>

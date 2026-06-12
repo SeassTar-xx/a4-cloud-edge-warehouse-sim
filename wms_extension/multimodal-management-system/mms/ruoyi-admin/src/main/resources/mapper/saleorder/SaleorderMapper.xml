@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.saleorder.mapper.SaleorderMapper">
+
+    <resultMap type="Saleorder" id="SaleorderResult">
+        <result property="saleDate"    column="saleDate"    />
+        <result property="itemCode"    column="itemCode"    />
+        <result property="name"    column="name"    />
+        <result property="planMount"    column="planMount"    />
+        <result property="uid"    column="uid"    />
+        <result property="bomCode"    column="bomCode"    />
+        <result property="saleCode"    column="saleCode"    />
+        <result property="id"    column="id"    />
+    </resultMap>
+
+    <sql id="selectSaleorderVo">
+        select saleDate, itemCode, name, planMount, uid, bomCode, saleCode, id from saleorder
+    </sql>
+
+    <select id="selectSaleorderList" parameterType="Saleorder" resultMap="SaleorderResult">
+        <include refid="selectSaleorderVo"/>
+        <where>
+            <if test="saleDate != null "> and saleDate = #{saleDate}</if>
+            <if test="itemCode != null  and itemCode != ''"> and itemCode = #{itemCode}</if>
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="planMount != null "> and planMount = #{planMount}</if>
+            <if test="uid != null "> and uid = #{uid}</if>
+            <if test="bomCode != null  and bomCode != ''"> and bomCode = #{bomCode}</if>
+            <if test="saleCode != null  and saleCode != ''"> and saleCode = #{saleCode}</if>
+        </where>
+    </select>
+
+    <select id="selectSaleorderById" parameterType="Integer" resultMap="SaleorderResult">
+        <include refid="selectSaleorderVo"/>
+        where id = #{id}
+    </select>
+
+    <select id="selectSaleorderListByDate" parameterType="Date" resultMap="SaleorderResult">
+        <include refid="selectSaleorderVo"/>
+        where saleDate = #{saleDate}
+    </select>
+
+    <insert id="insertSaleorder" parameterType="Saleorder" useGeneratedKeys="true" keyProperty="id">
+        insert into saleorder
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="saleDate != null">saleDate,</if>
+            <if test="itemCode != null and itemCode != ''">itemCode,</if>
+            <if test="name != null and name != ''">name,</if>
+            <if test="planMount != null">planMount,</if>
+            <if test="uid != null">uid,</if>
+            <if test="bomCode != null and bomCode != ''">bomCode,</if>
+            <if test="saleCode != null">saleCode,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="saleDate != null">#{saleDate},</if>
+            <if test="itemCode != null and itemCode != ''">#{itemCode},</if>
+            <if test="name != null and name != ''">#{name},</if>
+            <if test="planMount != null">#{planMount},</if>
+            <if test="uid != null">#{uid},</if>
+            <if test="bomCode != null and bomCode != ''">#{bomCode},</if>
+            <if test="saleCode != null">#{saleCode},</if>
+        </trim>
+    </insert>
+
+    <update id="updateSaleorder" parameterType="Saleorder">
+        update saleorder
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="saleDate != null">saleDate = #{saleDate},</if>
+            <if test="itemCode != null and itemCode != ''">itemCode = #{itemCode},</if>
+            <if test="name != null and name != ''">name = #{name},</if>
+            <if test="planMount != null">planMount = #{planMount},</if>
+            <if test="uid != null">uid = #{uid},</if>
+            <if test="bomCode != null and bomCode != ''">bomCode = #{bomCode},</if>
+            <if test="saleCode != null">saleCode = #{saleCode},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteSaleorderById" parameterType="Integer">
+        delete from saleorder where id = #{id}
+    </delete>
+
+    <delete id="deleteSaleorderByIds" parameterType="String">
+        delete from saleorder where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
