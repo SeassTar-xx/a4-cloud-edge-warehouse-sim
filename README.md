@@ -4,6 +4,10 @@
 
 `wms_extension/multimodal-management-system/` 来自现有 WMS 项目，只作为云侧 WMS、仓储业务扩展、库存映射展示和演示素材。它不是 A4 仿真核心，也不作为平台评测的必要依赖。核心算法必须能在平台内独立运行。
 
+## 当前第一阶段目标
+
+平台接入前的本地算法内核验证。当前阶段优先保证 `a4_core/` 可以在无第三方依赖的环境中完成编译、单元测试和 benchmark，为后续接入翼辉平台接口打稳定基础。
+
 ## 核心算法模块
 
 - `a4_core/model.py`：货物、AGV、传送带、交接区、盘位、货架、机器人、仿真状态。
@@ -48,4 +52,3 @@ sh scripts/run_core_tests.sh
 3. 替换 `platform_modules/*/main.py` 中的 TODO 适配层。
 4. 使用平台真实地图和任务流补充实验记录。
 5. 每次修改后运行 `python3 -m unittest discover -s tests`。
-
