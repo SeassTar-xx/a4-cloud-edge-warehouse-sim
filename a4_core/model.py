@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from enum import Enum
 from typing import Dict, Iterable, List, Optional, Tuple
 
 
@@ -16,6 +17,18 @@ class CapacityError(ValueError):
 
 class ValidationError(ValueError):
     """Raised when an object violates a domain constraint."""
+
+
+class AGVStatus(str, Enum):
+    IDLE = "IDLE"
+    TO_PICKUP = "TO_PICKUP"
+    PICKING = "PICKING"
+    TO_HANDOFF = "TO_HANDOFF"
+    WAIT_HANDOFF = "WAIT_HANDOFF"
+    DROPPING = "DROPPING"
+    RETURNING = "RETURNING"
+    BLOCKED = "BLOCKED"
+    ERROR = "ERROR"
 
 
 @dataclass(frozen=True, order=True)
@@ -43,6 +56,16 @@ class AGV:
     capacity: float = 1.0
     loaded: List[Cargo] = field(default_factory=list)
     distance_travelled: int = 0
+    status: AGVStatus = AGVStatus.IDLE
+    path: List[Point] = field(default_factory=list)
+    path_index: int = 0
+    target_conveyor_id: Optional[str] = None
+    target_handoff_id: Optional[str] = None
+    target_shelf_id: Optional[str] = None
+    assigned_cargo_ids: List[str] = field(default_factory=list)
+    home_position: Optional[Point] = None
+    wait_ticks: int = 0
+    logs: List[str] = field(default_factory=list)
 
     @property
     def load_volume(self) -> float:
@@ -61,6 +84,37 @@ class AGV:
         cargos = list(self.loaded)
         self.loaded.clear()
         return cargos
+
+    def transition(self, new_status: AGVStatus, time: int, reason: str) -> None:
+        if self.status != new_status:
+            self.logs.append(f"t={time} {self.id}: {self.status.value} -> {new_status.value}: {reason}")
+        self.status = new_status
+
+    def assign_path(self, path: List[Point]) -> None:
+        self.path = list(path)
+        self.path_index = 0
+
+    def has_next_step(self) -> bool:
+        return self.path_index + 1 < len(self.path)
+
+    def step(self) -> bool:
+        if not self.has_next_step():
+            return False
+        next_point = self.path[self.path_index + 1]
+        if next_point != self.position:
+            self.distance_travelled += 1
+        self.position = next_point
+        self.path_index += 1
+        return True
+
+    def clear_task(self) -> None:
+        self.path = []
+        self.path_index = 0
+        self.target_conveyor_id = None
+        self.target_handoff_id = None
+        self.target_shelf_id = None
+        self.assigned_cargo_ids = []
+        self.wait_ticks = 0
 
 
 @dataclass
@@ -163,8 +217,9 @@ class SimulationState:
     inventory: Dict[str, Tuple[str, str]] = field(default_factory=dict)
     time: int = 0
     agv_position_history: Dict[str, List[Point]] = field(default_factory=dict)
+    event_log: List[str] = field(default_factory=list)
+    invariant_errors: List[str] = field(default_factory=list)
 
     def record_positions(self) -> None:
         for agv_id, agv in self.agvs.items():
             self.agv_position_history.setdefault(agv_id, []).append(agv.position)
-

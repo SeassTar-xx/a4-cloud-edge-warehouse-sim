@@ -3,10 +3,11 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Iterable, List, Optional, Tuple
+from typing import Iterable, List, Optional
 
 from .grid import GridMap
-from .model import AGV, Cargo, Conveyor, HandoffZone, ShelfRobot
+from .model import AGV, AGVStatus, Cargo, Conveyor, HandoffZone, Point, ShelfRobot
+from .path_planner import PathPlanner
 
 
 @dataclass
@@ -16,6 +17,8 @@ class DispatchDecision:
     cargo_ids: List[str]
     target_shelf_id: str
     score: float
+    pickup_path: List[Point] | None = None
+    dropoff_path: List[Point] | None = None
 
 
 class ConservativeDispatcher:
@@ -29,6 +32,7 @@ class ConservativeDispatcher:
         handoff_zones: Iterable[HandoffZone],
         shelf_robots: Iterable[ShelfRobot],
         time: int,
+        planner: PathPlanner | None = None,
     ) -> Optional[DispatchDecision]:
         zone_by_shelf = {z.shelf_id: z for z in handoff_zones}
         robot_by_shelf = {sid: robot for robot in shelf_robots for sid in robot.shelf_ids}
@@ -44,15 +48,37 @@ class ConservativeDispatcher:
                 if zone is None or not zone.can_accept(batch):
                     continue
                 for agv in agvs:
+                    if agv.status is not AGVStatus.IDLE:
+                        continue
                     if not agv.can_load(batch):
                         continue
+                    pickup_path = None
+                    dropoff_path = None
+                    if planner is not None:
+                        pickup_result = planner.plan(agv.position, conveyor.position, time, agv.id)
+                        if not pickup_result.success or pickup_result.path is None:
+                            continue
+                        pickup_arrival = time + len(pickup_result.path) - 1
+                        dropoff_result = planner.plan(conveyor.position, zone.position, pickup_arrival, agv.id)
+                        if not dropoff_result.success or dropoff_result.path is None:
+                            continue
+                        pickup_path = pickup_result.path
+                        dropoff_path = dropoff_result.path
                     distance = self.grid.manhattan(agv.position, conveyor.position)
                     congestion = zone.used_volume * 10.0
                     robot = robot_by_shelf.get(target)
                     robot_busy = 3.0 if robot and robot.busy_until > time else 0.0
                     merge_bonus = max(0, len(batch) - 1) * 4.0
                     score = distance + congestion + robot_busy - merge_bonus
-                    decision = DispatchDecision(agv.id, conveyor.id, [c.id for c in batch], target, score)
+                    decision = DispatchDecision(
+                        agv.id,
+                        conveyor.id,
+                        [c.id for c in batch],
+                        target,
+                        score,
+                        pickup_path=pickup_path,
+                        dropoff_path=dropoff_path,
+                    )
                     if best is None or decision.score < best.score:
                         best = decision
         return best
@@ -81,4 +107,3 @@ class ConservativeDispatcher:
         picked = [c for c in queue if c.id in wanted]
         queue[:] = [c for c in queue if c.id not in wanted]
         return picked
-

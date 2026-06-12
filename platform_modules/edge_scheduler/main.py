@@ -11,9 +11,9 @@ class EdgeSchedulerAdapter:
 
     def plan_path(self, start, goal, start_time, agv_id):
         # TODO: Map platform coordinates and time ticks to a4_core Point/time.
+        # Returns PlanResult so platform callers can inspect failure_reason and choose WAIT/replan.
         return self.planner.plan(start, goal, start_time, agv_id)
 
 
 if __name__ == "__main__":
     print("edge_scheduler adapter placeholder; platform map interface is pending.")
-

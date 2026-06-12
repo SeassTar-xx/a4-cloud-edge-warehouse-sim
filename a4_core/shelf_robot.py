@@ -10,7 +10,7 @@ from .model import Cargo, HandoffZone, Shelf, ShelfRobot
 class ShelfRobotPlanner:
     def choose_batch(self, robot: ShelfRobot, zones: List[HandoffZone], time: int) -> Optional[tuple[HandoffZone, List[Cargo]]]:
         eligible = [z for z in zones if z.shelf_id in robot.shelf_ids and z.waiting]
-        eligible.sort(key=lambda z: (-z.used_volume, min(c.created_at for c in z.waiting)))
+        eligible.sort(key=lambda z: (min(c.created_at for c in z.waiting), -z.used_volume))
         for zone in eligible:
             for volume in (1.0, 0.5, 0.25):
                 same = [c for c in zone.waiting if c.volume == volume]
@@ -46,4 +46,3 @@ class ShelfRobotPlanner:
             inventory[cargo.id] = (shelf.id, slot.id)
         zone.pop_batch(batch)
         robot.last_batch = list(batch)
-
